@@ -20,15 +20,7 @@ debuerreotype-apt-get $WD/chroot update
 cp $DISTRO_DIR/*.deb $WD/chroot/var/cache/apt/archives/
 
 debuerreotype-chroot $WD/chroot DEBIAN_FRONTEND=noninteractive apt-get -o Acquire::Check-Valid-Until=false install \
-    --no-install-recommends --yes \
-    linux-image-$ARCH live-boot systemd-sysv \
-    grub-common grub-pc-bin grub-efi-amd64-bin \
-    iproute2 ifupdown pciutils usbutils dosfstools eject exfatprogs \
-    vim links2 xpdf cups cups-bsd enscript libbsd-dev tree openssl less iputils-ping \
-    xserver-xorg-core xserver-xorg xfce4 xfce4-terminal xfce4-panel lightdm system-config-printer \
-    xterm gvfs thunar-volman xfce4-power-manager xfce4-screenshooter ristretto tumbler unzip locales \
-    xsltproc libxml2-utils \
-    libengine-pkcs11-openssl opensc opensc-pkcs11 python3
+    --no-install-recommends --yes $PACKAGES
 debuerreotype-apt-get $WD/chroot --yes --purge autoremove
 debuerreotype-apt-get $WD/chroot --yes clean
 
@@ -60,14 +52,12 @@ iface eth0 inet static
 EOF
 
 # Profile in .bashrc to work with xfce terminal
-echo "export PATH=:/opt/icann/bin:/opt/Keyper/bin:/usr/safenet/lunaclient/bin:\$PATH" >> $WD/chroot/root/.bashrc
+echo "export PATH=:/opt/package/bin:\$PATH" >> $WD/chroot/root/.bashrc
 # ls with color
 sed -i -r -e '9s/^#//' \
           -e '10s/^#//' \
           -e '11s/^#//' \
     $WD/chroot/root/.bashrc
-# Set HSM environment
-egrep -v '^\s*(#|$)' $WD/chroot/opt/dnssec/fixenv >> $WD/chroot/root/.bashrc
 # Set the correct locale
 echo "export LC_ALL=${LOCALE_LC_ALL}" >> $WD/chroot/root/.bashrc
 

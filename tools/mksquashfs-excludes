@@ -2,8 +2,6 @@ boot/*
 root/.cache/*
 root/.rpmdb/*
 tmp/*
-usr/safenet/lunaclient/g5driver/x86_64/*
-usr/safenet/lunaclient/g7driver/x86_64/*
 usr/share/doc/*
 usr/share/icons/*/.icon-theme.cache
 usr/share/icons/*/icon-theme.cache

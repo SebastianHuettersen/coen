@@ -1,0 +1,28 @@
+FROM debian:bookworm-20240701-slim@sha256:f528891ab1aa484bf7233dbcc84f3c806c3e427571d75510a9d74bb5ec535b33
+
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Copy your variables.sh script
+COPY variables.sh /
+
+# Remove default sources and add snapshot sources
+RUN . ./variables.sh && \
+    rm -f /etc/apt/sources.list.d/debian.sources && \
+    rm -f /etc/apt/sources.list && \
+    echo "deb http://snapshot.debian.org/archive/debian/$(date --date "$DATE" '+%Y%m%dT%H%M%SZ') "$DIST" main" >> /etc/apt/sources.list && \
+    echo "deb http://snapshot.debian.org/archive/debian/$(date --date "$DATE" '+%Y%m%dT%H%M%SZ') "$DIST"-updates main" >> /etc/apt/sources.list && \
+    echo "deb http://snapshot.debian.org/archive/debian-security/$(date --date "$DATE" '+%Y%m%dT%H%M%SZ') "$DIST"-security main" >> /etc/apt/sources.list 
+
+# Update and download all packages + dependencies
+RUN set -x && \
+    . /variables.sh && \
+    apt-get update -o Acquire::Check-Valid-Until=false && \
+    # This is the key command:
+    # -d = --download-only (Don't install, just download)
+    # --no-install-recommends = Only get required dependencies
+    apt-get install -d -y --no-install-recommends \
+        -o Acquire::Check-Valid-Until=false \
+        $PACKAGES && \
+    mkdir -p /packages && \
+    mv /var/cache/apt/archives/*.deb /packages/
